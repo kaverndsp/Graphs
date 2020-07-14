@@ -76,10 +76,23 @@ class Graph:
         """
         visited = set()
         q = Queue()
-        q.enqueue(starting_vertex)
+        q.enqueue([starting_vertex])
 
-        while q.size > 0:
-            print()
+        while q.size() > 0:
+            path = q.dequeue()
+
+            last_vertex = path[-1]
+
+            if last_vertex not in visited:
+                visited.add(last_vertex)
+
+                if last_vertex == destination_vertex:
+                    return path
+
+                for neighbor in self.get_neighbors(last_vertex):
+                    path_copy = path.copy()
+                    path_copy.append(neighbor)
+                    q.enqueue(path_copy)
 
     def dfs(self, starting_vertex, destination_vertex):
         """

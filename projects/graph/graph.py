@@ -57,15 +57,24 @@ class Graph:
                     s.push(neighbor)
 
     def dft_recursive(self, starting_vertex, visited=set()):
-        if visited is None:
-            visited = set()
+        # if visited is None:
+        #     visited = set()
 
-        if starting_vertex not in visited:
+        # if starting_vertex not in visited:
 
-            visited.add(starting_vertex)
-            # print(starting_vertex)
+        #     visited.add(starting_vertex)
+        #     # print(starting_vertex)
 
-            for neighbor in self.get_neighbors(starting_vertex):
+        #     for neighbor in self.get_neighbors(starting_vertex):
+        #         self.dft_recursive(neighbor, visited)
+
+        visited.add(starting_vertex)
+        print(starting_vertex)
+
+        neighbors = self.get_neighbors(starting_vertex)
+
+        for neighbor in neighbors:
+            if neighbor not in visited:
                 self.dft_recursive(neighbor, visited)
 
     def bfs(self, starting_vertex, destination_vertex):
@@ -102,7 +111,7 @@ class Graph:
         """
         pass  # TODO
 
-    def dfs_recursive(self, starting_vertex, destination_vertex):
+    def dfs_recursive(self, vertex, destination_vertex, path=[], visited=set()):
         """
         Return a list containing a path from
         starting_vertex to destination_vertex in
@@ -110,7 +119,30 @@ class Graph:
 
         This should be done using recursion.
         """
-        pass  # TODO
+        # mark our node as visited
+
+        visited.add(vertex)
+        if len(path) == 0:
+            path.append(vertex)
+
+        if vertex == destination_vertex:
+            return path
+
+        neighbors = self.get_neighbors(vertex)
+
+        for neighbor in neighbors:
+            if neighbor not in visited:
+                result = self.dfs_recursive(
+                    neighbor, destination_vertex, path + [neighbor], visited)
+                if result is not None:
+                    return result
+
+        # check if its our target node if so return
+
+        # iterate over neighbors
+        # check if its visited
+
+        # if not recurse
 
 
 if __name__ == '__main__':

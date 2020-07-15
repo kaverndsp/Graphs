@@ -1,6 +1,11 @@
+import random
+from util import Queue
+
+
 class User:
     def __init__(self, name):
         self.name = name
+
 
 class SocialGraph:
     def __init__(self):
@@ -28,6 +33,11 @@ class SocialGraph:
         self.users[self.last_id] = User(name)
         self.friendships[self.last_id] = set()
 
+    def fisher_yates_shuffle(self, l):
+        for i in range(0, len(l)):
+            random_index = random.randint(i, len(l) - 1)
+            l[random_index], l[i] = l[i], l[random_index]
+
     def populate_graph(self, num_users, avg_friendships):
         """
         Takes a number of users and an average number of friendships
@@ -43,10 +53,29 @@ class SocialGraph:
         self.users = {}
         self.friendships = {}
         # !!!! IMPLEMENT ME
-
+        total_friendships = num_users * avg_friendships
         # Add users
+        # use num_users
+        for user in range(num_users):
+            self.add_user(user)
 
         # Create friendships
+        # make a list with ALL possible friendships
+        friendships = []
+        for user in range(1, self.last_id + 1):
+            for friend in range(user + 1, num_users + 1):
+                friendship = (user, friend)
+                friendships.append(friendship)
+
+        self.fisher_yates_shuffle(friendships)
+
+        random_friendships = friendships[:total_friendships//2]
+
+        for friendship in random_friendships:
+            self.add_friendship(friendship[0], friendship[1])
+
+    def get_friendships(self, user_id):
+        return self.friendships[user_id]
 
     def get_all_social_paths(self, user_id):
         """
@@ -58,7 +87,20 @@ class SocialGraph:
         The key is the friend's ID and the value is the path.
         """
         visited = {}  # Note that this is a dictionary, not a set
-        # !!!! IMPLEMENT ME
+        q = Queue()
+        q.enqueue([user_id])
+
+        while q.size() > 0:
+            current_path = q.dequeue()
+            new_user_node = current_path[-1]
+            if current_path not in visited.items():
+                visited[new_user_node] = current_path
+
+                for friend in self.get_friendships(new_user_node):
+                    path_copy = list(current_path)
+                    path_copy.append(friend)
+                    q.enqueue(path_copy)
+
         return visited
 
 

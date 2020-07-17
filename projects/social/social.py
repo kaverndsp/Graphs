@@ -38,6 +38,26 @@ class SocialGraph:
             random_index = random.randint(i, len(l) - 1)
             l[random_index], l[i] = l[i], l[random_index]
 
+    def linear_populate_graph(self, num_users, avg_friendships):
+        self.last_id = 0
+        self.users = {}
+        self.friendships = {}
+
+        for user in range(num_users):
+            self.add_user(user)
+
+        target_number_friendships = num_users * avg_friendships
+        friendships_created = 0
+
+        while friendships_created < target_number_friendships:
+
+            friend_one = random.randint(1, self.last_id)
+            friend_two = random.randint(1, self.last_id)
+
+            friendship_was_made = self.add_friendship(friend_one, friend_two)
+            if friendship_was_made:
+                friendships_created += 2
+
     def populate_graph(self, num_users, avg_friendships):
         """
         Takes a number of users and an average number of friendships
@@ -87,19 +107,30 @@ class SocialGraph:
         The key is the friend's ID and the value is the path.
         """
         visited = {}  # Note that this is a dictionary, not a set
+
         q = Queue()
         q.enqueue([user_id])
 
+        # while q isn't empty
         while q.size() > 0:
+            # dequeue the current path
             current_path = q.dequeue()
-            new_user_node = current_path[-1]
-            if current_path not in visited.items():
-                visited[new_user_node] = current_path
 
-                for friend in self.get_friendships(new_user_node):
-                    path_copy = list(current_path)
-                    path_copy.append(friend)
-                    q.enqueue(path_copy)
+        # grab last vertex from path
+            current_user = current_path[-1]
+
+            # if it hasn't been visited
+            if current_user not in visited:
+                # add to our dictionary
+                #### { friend_id: path }
+                visited[current_user] = current_path
+
+                friends = self.friendships[current_user]
+        # then enqueue PATHS TO each of our neighbors
+                for friend in friends:
+                    path_to_friend = current_path + [friend]
+
+                    q.enqueue(path_to_friend)
 
         return visited
 
